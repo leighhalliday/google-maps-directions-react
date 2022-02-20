@@ -11,6 +11,7 @@ import Distance from "./distance";
 
 type LatLngLiteral = google.maps.LatLngLiteral;
 type DirectionsResult = google.maps.DirectionsResult;
+type MapOptions = google.maps.MapOptions;
 
 export default function Map() {
   const mapRef = useRef<GoogleMap>();
@@ -22,6 +23,14 @@ export default function Map() {
     []
   );
   const houses = useMemo(() => generateHouses(center), [center]);
+  const options = useMemo<MapOptions>(
+    () => ({
+      mapId: "fe4144980f84c85e",
+      disableDefaultUI: true,
+      clickableIcons: false,
+    }),
+    []
+  );
 
   const fetchDirections = (house: LatLngLiteral) => {
     if (!selected) return;
@@ -60,7 +69,7 @@ export default function Map() {
           zoom={10}
           center={center}
           mapContainerClassName="map-container"
-          options={{ disableDefaultUI: true, clickableIcons: false }}
+          options={options}
           onLoad={onLoad}
         >
           {directions && (
@@ -119,7 +128,7 @@ export default function Map() {
 }
 
 const defaultOptions = {
-  strokeOpacity: 0.8,
+  strokeOpacity: 0.5,
   strokeWeight: 2,
   clickable: false,
   draggable: false,
@@ -129,21 +138,21 @@ const defaultOptions = {
 const closeOptions = {
   ...defaultOptions,
   zIndex: 3,
-  fillOpacity: 0.1,
+  fillOpacity: 0.05,
   strokeColor: "#8BC34A",
   fillColor: "#8BC34A",
 };
 const middleOptions = {
   ...defaultOptions,
   zIndex: 2,
-  fillOpacity: 0.1,
+  fillOpacity: 0.05,
   strokeColor: "#FBC02D",
   fillColor: "#FBC02D",
 };
 const farOptions = {
   ...defaultOptions,
   zIndex: 1,
-  fillOpacity: 0.1,
+  fillOpacity: 0.05,
   strokeColor: "#FF5252",
   fillColor: "#FF5252",
 };

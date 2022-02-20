@@ -23,6 +23,12 @@ a {
 .controls {
   width: 20%;
   padding: 1rem;
+  background: #14161a;
+  color: #fff;
+}
+
+.controls input {
+  border: none;
 }
 
 .map-container {
