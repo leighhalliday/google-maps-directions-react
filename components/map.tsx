@@ -14,32 +14,32 @@ type DirectionsResult = google.maps.DirectionsResult;
 type MapOptions = google.maps.MapOptions;
 
 export default function Map() {
-  const mapRef = useRef<GoogleMap>();
-  const [selected, setSelected] = useState<LatLngLiteral>();
+  const [office, setOffice] = useState<LatLngLiteral>();
   const [directions, setDirections] = useState<DirectionsResult>();
-  const onLoad = useCallback((map) => (mapRef.current = map), []);
+  const mapRef = useRef<GoogleMap>();
   const center = useMemo<LatLngLiteral>(
     () => ({ lat: 43.45, lng: -80.49 }),
     []
   );
-  const houses = useMemo(() => generateHouses(center), [center]);
   const options = useMemo<MapOptions>(
     () => ({
-      mapId: "fe4144980f84c85e",
+      mapId: "b181cac70f27f5e6",
       disableDefaultUI: true,
       clickableIcons: false,
     }),
     []
   );
+  const onLoad = useCallback((map) => (mapRef.current = map), []);
+  const houses = useMemo(() => generateHouses(center), [center]);
 
   const fetchDirections = (house: LatLngLiteral) => {
-    if (!selected) return;
+    if (!office) return;
 
     const service = new google.maps.DirectionsService();
     service.route(
       {
-        origin: selected,
-        destination: house,
+        origin: house,
+        destination: office,
         travelMode: google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
@@ -55,15 +55,14 @@ export default function Map() {
       <div className="controls">
         <h1>Commute?</h1>
         <Places
-          setSelected={(position) => {
-            setSelected(position);
-            mapRef!.current!.panTo(position);
+          setOffice={(position) => {
+            setOffice(position);
+            mapRef.current?.panTo(position);
           }}
         />
+        {!office && <p>Enter the address of your office.</p>}
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
-        {!selected && <p>Enter the address of your office.</p>}
       </div>
-
       <div className="map">
         <GoogleMap
           zoom={10}
@@ -85,14 +84,14 @@ export default function Map() {
             />
           )}
 
-          {selected && (
+          {office && (
             <>
-              <MarkerClusterer
-                options={{
-                  imagePath:
-                    "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m",
-                }}
-              >
+              <Marker
+                position={office}
+                icon="https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
+              />
+
+              <MarkerClusterer>
                 {(clusterer) =>
                   houses.map((house) => (
                     <Marker
@@ -107,18 +106,9 @@ export default function Map() {
                 }
               </MarkerClusterer>
 
-              <Marker
-                position={selected}
-                icon="https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
-              />
-
-              <Circle center={selected} radius={15000} options={closeOptions} />
-              <Circle
-                center={selected}
-                radius={30000}
-                options={middleOptions}
-              />
-              <Circle center={selected} radius={45000} options={farOptions} />
+              <Circle center={office} radius={15000} options={closeOptions} />
+              <Circle center={office} radius={30000} options={middleOptions} />
+              <Circle center={office} radius={45000} options={farOptions} />
             </>
           )}
         </GoogleMap>
